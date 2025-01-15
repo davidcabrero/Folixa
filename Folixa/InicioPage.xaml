@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Folixa"
+             x:Class="Folixa.InicioPage"
+             Title="Discotecas">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <StackLayout Padding="10">
+            <SearchBar x:Name="searchBar" Placeholder="Buscar discotecas"/>
+            <CollectionView x:Name="discotecasCollectionView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame CornerRadius="10" Padding="0" Margin="5" HasShadow="True" HeightRequest="150">
+                            <Grid>
+                                <Image Source="{Binding Imagen, Converter={StaticResource ByteArrayToImageConverter}}" 
+                                       Aspect="AspectFill" 
+                                       Opacity="0.5" 
+                                       VerticalOptions="Fill" 
+                                       HorizontalOptions="Fill" />
+                                <Grid Padding="10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label Text="{Binding Nombre}" FontSize="Medium" TextColor="White" Grid.Row="0" />
+                                    <HorizontalStackLayout Grid.Row="1" BindableLayout.ItemsSource="{Binding Estrellas}">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding}" WidthRequest="20" HeightRequest="20" />
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding Ubicacion}" FontSize="Small" TextColor="White" Grid.Row="2" />
+                                </Grid>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
