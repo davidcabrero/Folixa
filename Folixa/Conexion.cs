@@ -6,7 +6,6 @@ using Org.BouncyCastle.Utilities;
 
 namespace Folixa
 {
-
     public static class GlobalSettings
     {
         public static string UsuarioIniciado { get; set; }
@@ -51,6 +50,33 @@ namespace Folixa
             }
         }
 
+        // Función para registrar usuario
+        public async Task<bool> RegistrarUsuarioAsync(string user, string email, string password, byte[] foto)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "INSERT INTO usuarios (user, email, password, foto) VALUES (@username, @useremail, @userpassword, @userfoto)";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@username", user);
+                cmd.Parameters.AddWithValue("@useremail", email);
+                cmd.Parameters.AddWithValue("@userpassword", BCrypt.Net.BCrypt.HashPassword(password));
+                cmd.Parameters.AddWithValue("@userfoto", foto);
+
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
         // Función para obtener las discotecas
         public async Task<List<Discoteca>> ObtenerDiscotecasAsync()
         {
@@ -79,6 +105,7 @@ namespace Folixa
             }
             return discotecas;
         }
+
         public async Task<Usuario> ObtenerDatosUsuarioAsync(string username)
         {
             Usuario usuario = null;
@@ -113,8 +140,32 @@ namespace Folixa
             return usuario;
         }
 
-    }
+        public async Task<bool> SeguirUsuarioAsync(string usuarioActual, string usuarioASeguir)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "UPDATE usuarios SET seguidos = seguidos + 1 WHERE user = @usuarioActual; " +
+                               "UPDATE usuarios SET seguidores = seguidores + 1 WHERE user = @usuarioASeguir;";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@usuarioActual", usuarioActual);
+                cmd.Parameters.AddWithValue("@usuarioASeguir", usuarioASeguir);
 
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
+    }
 
 
     // Cambiar el tipo de la propiedad Imagen en la clase Discoteca de byte a byte[]

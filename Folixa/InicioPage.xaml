@@ -13,38 +13,63 @@
 
     <ContentPage.Content>
         <StackLayout Padding="10">
-            <SearchBar x:Name="searchBar" Placeholder="Buscar discotecas"/>
-            <CollectionView x:Name="discotecasCollectionView">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:Discoteca">
-                        <Frame CornerRadius="10" Padding="0" Margin="5" HasShadow="True" HeightRequest="150">
-                            <Grid>
-                                <Image Source="{Binding Imagen, Converter={StaticResource ByteArrayToImageConverter}}" 
+            <!-- Sección de búsqueda de discotecas -->
+            <StackLayout x:Name="busquedaDiscotecasSection" IsVisible="True" Spacing="10">
+                <SearchBar x:Name="searchBar" Placeholder="Buscar discotecas"/>
+                <CollectionView x:Name="discotecasCollectionView">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="local:Discoteca">
+                            <Frame CornerRadius="10" Padding="0" Margin="5" HasShadow="True" HeightRequest="150">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:InicioPage}}, Path=BindingContext.DiscotecaSelectedCommand}" CommandParameter="{Binding .}" />
+                                </Frame.GestureRecognizers>
+                                <Grid>
+                                    <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Estrellas}" Spacing="5" VerticalOptions="Center">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding}" WidthRequest="20" HeightRequest="20" />
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </HorizontalStackLayout>
+                                    <Image Source="{Binding Imagen, Converter={StaticResource ByteArrayToImageConverter}}" 
                                        Aspect="AspectFill" 
                                        Opacity="0.5" 
                                        VerticalOptions="Fill" 
                                        HorizontalOptions="Fill" />
-                                <Grid Padding="10">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Label Text="{Binding Nombre}" FontSize="Medium" TextColor="White" Grid.Row="0" />
-                                    <HorizontalStackLayout Grid.Row="1" BindableLayout.ItemsSource="{Binding Estrellas}">
-                                        <BindableLayout.ItemTemplate>
-                                            <DataTemplate>
-                                                <Image Source="{Binding .}" WidthRequest="20" HeightRequest="20" />
-                                            </DataTemplate>
-                                        </BindableLayout.ItemTemplate>
-                                    </HorizontalStackLayout>
-                                    <Label Text="{Binding Ubicacion}" FontSize="Small" TextColor="White" Grid.Row="2" />
+                                    <Grid Padding="10">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Label Text="{Binding Nombre}" FontSize="Medium" TextColor="White" Grid.Row="0" />
+                                        <Label Text="{Binding Ubicacion}" FontSize="Small" TextColor="White" Grid.Row="2" />
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+
+            <!-- Sección de info de una discoteca -->
+            <StackLayout x:Name="DiscotecaSection" IsVisible="False" Spacing="10" Padding="20">
+                <Frame CornerRadius="20" HasShadow="True" Padding="20" BackgroundColor="#333">
+                    <StackLayout Spacing="15">
+                        <Label x:Name="nombreDiscoteca" FontSize="Large" HorizontalOptions="Center" TextColor="White" FontAttributes="Bold" />
+                        <Image x:Name="imagenDiscoteca" HeightRequest="200" WidthRequest="200" HorizontalOptions="Center" Aspect="AspectFill" />
+                        <Label x:Name="ubicacionDiscoteca" FontSize="Medium" HorizontalOptions="Center" TextColor="LightGray" />
+                        <Label x:Name="descripcionDiscoteca" FontSize="Small" HorizontalOptions="Center" TextColor="White" />
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Button Text="Ver Fotos" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
+                            <Button Text="Ver Comentarios" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
+                            <Button Text="Ver Entradas" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
+                            <Button Text="Volver" Clicked="OnVolverButtonClicked" BackgroundColor="#B00020" TextColor="White" CornerRadius="20" />
+                        </HorizontalStackLayout>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

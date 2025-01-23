@@ -13,7 +13,16 @@
     <ScrollView>
         <VerticalStackLayout Padding="20">
             <Label Text="Mi Perfil" FontSize="Large" HorizontalOptions="Center" />
-            <Image x:Name="fotoPerfil" Source="{Binding Foto, Converter={StaticResource ByteArrayToImageConverter}}" HeightRequest="100" WidthRequest="100" />
+
+            <Border
+                HeightRequest="100"
+                WidthRequest="100"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 50"
+                Padding="0">
+                <Image x:Name="fotoPerfil" Source="{Binding Foto, Converter={StaticResource ByteArrayToImageConverter}}" Aspect="AspectFill" />
+            </Border>
+            
             <Border Padding="10" Margin="5" Stroke="LightGray" StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout>
                     <Label Text="Usuario:" FontAttributes="Bold" />

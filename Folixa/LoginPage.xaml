@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Folixa"
              x:Class="Folixa.LoginPage"
              Title="Inicio de Sesión">
 
     <StackLayout Padding="30" Spacing="10" VerticalOptions="Center">
         <Label Text="Bienvenido/a" FontSize="24" HorizontalOptions="Center" />
-        <Entry x:Name="usernameEntry" Placeholder="Usuario" />
-        <Entry x:Name="passwordEntry" Placeholder="Contraseña" IsPassword="True" />
-        <Button Text="Iniciar Sesión" Clicked="OnLoginButtonClicked" />
-        <Label x:Name="messageLabel" TextColor="Red" IsVisible="False" />
+
+        <!-- Sección de inicio de sesión -->
+        <StackLayout x:Name="loginSection" Spacing="10">
+            <Entry x:Name="usernameEntry" Placeholder="Usuario" />
+            <Entry x:Name="passwordEntry" Placeholder="Contraseña" IsPassword="True" />
+            <Button Text="Iniciar Sesión" Clicked="OnLoginButtonClicked" />
+            <Label x:Name="messageLabel" TextColor="Red" IsVisible="False" />
+            <Button Text="Registrarse" Clicked="OnRegisterButtonClicked" WidthRequest="150" HorizontalOptions="Center" />
+        </StackLayout>
+
+        <!-- Sección de registro -->
+        <StackLayout x:Name="registerSection" IsVisible="False" Spacing="10">
+            <Entry x:Name="newUsernameEntry" Placeholder="Usuario" />
+            <Entry x:Name="newEmailEntry" Placeholder="Email" />
+            <Entry x:Name="newPasswordEntry" Placeholder="Contraseña" IsPassword="True" />
+            <Button Text="Seleccionar Foto" Clicked="OnSelectPhotoButtonClicked" BackgroundColor="#ADD8E6" />
+            <Image x:Name="selectedPhoto" HeightRequest="100" WidthRequest="100" HorizontalOptions="Center" />
+            <Button Text="Registrar" Clicked="OnRegisterUserButtonClicked" />
+            <Button Text="Cancelar" Clicked="OnCancelRegisterButtonClicked" />
+        </StackLayout>
     </StackLayout>
 </ContentPage>

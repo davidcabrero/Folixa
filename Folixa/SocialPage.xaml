@@ -3,18 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Folixa.SocialPage">
     <ScrollView>
-        <VerticalStackLayout>
-            <Button Text="Subir foto" Command="{Binding SubirFotoCommand}" />
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <SearchBar x:Name="searchBar" Placeholder="Buscar usuarios" SearchCommand="{Binding BuscarUsuarioCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}" />
+            <Frame x:Name="usuarioPerfilSection" IsVisible="False" Padding="20" CornerRadius="10" BackgroundColor="#f0f0f0" HasShadow="True">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <Image x:Name="fotoUsuario" HeightRequest="100" WidthRequest="100" HorizontalOptions="Center" Aspect="AspectFill" />
+                    <Label x:Name="nombreUsuario" FontSize="Large" HorizontalOptions="Center" FontAttributes="Bold" />
+                    <Label x:Name="emailUsuario" FontSize="Medium" HorizontalOptions="Center" TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <Label x:Name="seguidosUsuario" FontSize="Small" />
+                        <Label x:Name="seguidoresUsuario" FontSize="Small" />
+                    </HorizontalStackLayout>
+                    <Button Text="Seguir" Command="{Binding SeguirUsuarioCommand}" CommandParameter="{Binding .}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
+                </VerticalStackLayout>
+            </Frame>
+            <Button Text="Subir foto" Command="{Binding SubirFotoCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
             <CollectionView ItemsSource="{Binding Fotos}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="10" Margin="5">
+                        <Frame Padding="10" Margin="5" BackgroundColor="#f0f0f0" CornerRadius="10">
                             <VerticalStackLayout>
-                                <Image Source="{Binding FotoUrl}" HeightRequest="200" />
-                                <Label Text="{Binding Usuario}" FontSize="Small" />
+                                <Image Source="{Binding FotoUrl}" HeightRequest="200" Aspect="AspectFill" />
+                                <Label Text="{Binding Usuario}" FontSize="Small" FontAttributes="Bold" />
                                 <Label Text="{Binding Comentario}" FontSize="Medium" />
                             </VerticalStackLayout>
-                        </Border>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
