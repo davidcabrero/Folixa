@@ -6,6 +6,12 @@ using Org.BouncyCastle.Utilities;
 
 namespace Folixa
 {
+
+    public static class GlobalSettings
+    {
+        public static string UsuarioIniciado { get; set; }
+    }
+
     class Conexion
     {
         public MySqlConnection conexion;
@@ -14,34 +20,34 @@ namespace Folixa
             conexion = new MySqlConnection("Server = 127.0.0.1; Database = folixa; Uid = root; Pwd =; Port = 3306");
         }
 
-        //Para iniciar sesión
-        public Boolean iniciarSesion(String user, String password)
+        // Función para iniciar sesión
+        public bool iniciarSesion(string user, string password)
         {
             try
             {
                 conexion.Open();
-                MySqlCommand consulta =
-                    new MySqlCommand("SELECT * FROM usuario WHERE user = @user ", conexion); //Se verifica que el dni de la bbdd coincide con el introducido
-                consulta.Parameters.AddWithValue("@user", user);
-                MySqlDataReader resultado = consulta.ExecuteReader();
+                string query = "SELECT password FROM usuarios WHERE user = @username";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@username", user);
 
-                if (resultado.Read())
+                GlobalSettings.UsuarioIniciado = user;
+
+                var result = cmd.ExecuteScalar();
+                if (result != null)
                 {
-                    string passwordConHash = resultado.GetString("password"); //Se pasa la contraseña de la bbdd a string
-
-                    if (BCrypt.Net.BCrypt.Verify(password, passwordConHash)) //Se verifica que la contraseña introducida y la encriptada son la misma
-                    {
-                        return true;
-                    }
-
+                    string hashedPassword = result.ToString();
+                    return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
                 }
-
-                conexion.Close();
                 return false;
             }
-            catch (MySqlException e)
+            catch (Exception ex)
             {
-                return false; //No accede
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
             }
         }
 
@@ -73,7 +79,43 @@ namespace Folixa
             }
             return discotecas;
         }
+        public async Task<Usuario> ObtenerDatosUsuarioAsync(string username)
+        {
+            Usuario usuario = null;
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "SELECT user, email, seguidos, seguidores, foto FROM usuarios WHERE user = @username";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@username", username);
+
+                using (MySqlDataReader resultado = (MySqlDataReader)await cmd.ExecuteReaderAsync())
+                {
+                    if (resultado.Read())
+                    {
+                        usuario = new Usuario
+                        {
+                            User = resultado.GetString("user"),
+                            Email = resultado.GetString("email"),
+                            Seguidos = resultado.GetInt32("seguidos"),
+                            Seguidores = resultado.GetInt32("seguidores"),
+                            Foto = (byte[])resultado["foto"]
+                        };
+                    }
+                }
+                conexion.Close();
+            }
+            catch (MySqlException e)
+            {
+                // Manejar la excepción según sea necesario
+                return null;
+            }
+            return usuario;
+        }
+
     }
+
+
 
     // Cambiar el tipo de la propiedad Imagen en la clase Discoteca de byte a byte[]
     public class Discoteca
@@ -84,5 +126,15 @@ namespace Folixa
         public string Descripcion { get; set; }
         public byte[] Imagen { get; set; }
         public List<ImageSource> Estrellas { get; set; }
+    }
+
+    // Clase Usuario
+    public class Usuario
+    {
+        public string User { get; set; }
+        public string Email { get; set; }
+        public int Seguidos { get; set; }
+        public int Seguidores { get; set; }
+        public byte[] Foto { get; set; }
     }
 }

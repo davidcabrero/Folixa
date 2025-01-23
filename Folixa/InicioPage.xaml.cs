@@ -17,26 +17,30 @@
         private async void CargarDiscotecas()
         {
             discotecas = await conexion.ObtenerDiscotecasAsync();
-            discotecasFiltradas = new List<Discoteca>(discotecas);
-            // Método para mostrar estrellas según la valoracion de la discoteca en la lista
-            foreach (Discoteca discoteca in discotecasFiltradas)
+            foreach (var discoteca in discotecas)
             {
-                discoteca.Estrellas = new List<ImageSource>();
-                for (int i = 0; i < 5; i++)
+                discoteca.Estrellas = GenerarEstrellas(discoteca.Valoracion);
+            }
+            discotecasFiltradas = new List<Discoteca>(discotecas);
+            discotecasCollectionView.ItemsSource = discotecasFiltradas;
+        }
+
+        private List<ImageSource> GenerarEstrellas(string valoracion)
+        {
+            int valoracionNumerica = int.Parse(valoracion);
+            var estrellas = new List<ImageSource>();
+            for (int i = 0; i < 5; i++)
+            {
+                if (i < valoracionNumerica)
                 {
-                    ImageSource estrella;
-                    if (i < int.Parse(discoteca.Valoracion))
-                    {
-                        estrella = ImageSource.FromFile("Images/star_filled.png");
-                    }
-                    else
-                    {
-                        estrella = ImageSource.FromFile("Images/star_empty.png");
-                    }
-                    discoteca.Estrellas.Add(estrella);
+                    estrellas.Add(ImageSource.FromFile("images/star_filled.png"));
+                }
+                else
+                {
+                    estrellas.Add(ImageSource.FromFile("images/star_empty.png"));
                 }
             }
-            discotecasCollectionView.ItemsSource = discotecasFiltradas;
+            return estrellas;
         }
 
         private void buscarDiscoteca(object sender, TextChangedEventArgs e)

@@ -62,9 +62,11 @@
 	<ItemGroup>
 		<PackageReference Include="BCrypt" Version="1.0.0" />
 		<PackageReference Include="BCrypt-Official" Version="0.1.109" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.30" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.1" />
 		<PackageReference Include="MySql.Data" Version="9.1.0" />
+		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
+		<PackageReference Include="System.Text.Json" Version="9.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -80,6 +82,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="SocialPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

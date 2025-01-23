@@ -1,11 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Folixa"
              x:Class="Folixa.PerfilPage">
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <ScrollView>
-        <VerticalStackLayout>
+        <VerticalStackLayout Padding="20">
             <Label Text="Mi Perfil" FontSize="Large" HorizontalOptions="Center" />
-            <Label Text="{Binding NombreUsuario}" FontSize="Medium" HorizontalOptions="Center" />
+            <Image x:Name="fotoPerfil" Source="{Binding Foto, Converter={StaticResource ByteArrayToImageConverter}}" HeightRequest="100" WidthRequest="100" />
+            <Border Padding="10" Margin="5" Stroke="LightGray" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout>
+                    <Label Text="Usuario:" FontAttributes="Bold" />
+                    <Label x:Name="user" FontSize="Medium" TextColor="DarkSlateGray" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Padding="10" Margin="5" Stroke="LightGray" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout>
+                    <Label Text="Email:" FontAttributes="Bold" />
+                    <Label x:Name="email" FontSize="Medium" TextColor="DarkSlateGray" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Padding="10" Margin="5" Stroke="LightGray" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout>
+                    <Label Text="Seguidos:" FontAttributes="Bold" />
+                    <Label x:Name="seguidos" FontSize="Medium" TextColor="DarkSlateGray" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Padding="10" Margin="5" Stroke="LightGray" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout>
+                    <Label Text="Seguidores:" FontAttributes="Bold" />
+                    <Label x:Name="seguidores" FontSize="Medium" TextColor="DarkSlateGray" />
+                </VerticalStackLayout>
+            </Border>
             <Button Text="Ver Entradas Guardadas" Command="{Binding VerEntradasCommand}" />
             <CollectionView ItemsSource="{Binding Fotos}">
                 <CollectionView.ItemTemplate>

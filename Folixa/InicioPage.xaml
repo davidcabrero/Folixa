@@ -16,7 +16,7 @@
             <SearchBar x:Name="searchBar" Placeholder="Buscar discotecas"/>
             <CollectionView x:Name="discotecasCollectionView">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="local:Discoteca">
                         <Frame CornerRadius="10" Padding="0" Margin="5" HasShadow="True" HeightRequest="150">
                             <Grid>
                                 <Image Source="{Binding Imagen, Converter={StaticResource ByteArrayToImageConverter}}" 
@@ -34,7 +34,7 @@
                                     <HorizontalStackLayout Grid.Row="1" BindableLayout.ItemsSource="{Binding Estrellas}">
                                         <BindableLayout.ItemTemplate>
                                             <DataTemplate>
-                                                <Image Source="{Binding}" WidthRequest="20" HeightRequest="20" />
+                                                <Image Source="{Binding .}" WidthRequest="20" HeightRequest="20" />
                                             </DataTemplate>
                                         </BindableLayout.ItemTemplate>
                                     </HorizontalStackLayout>
