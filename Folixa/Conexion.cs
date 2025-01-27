@@ -93,6 +93,7 @@ namespace Folixa
                     discoteca.Valoracion = resultado.GetFloat("valoracion").ToString();
                     discoteca.Ubicacion = resultado.GetString("ubicacion");
                     discoteca.Descripcion = resultado.GetString("descripcion");
+                    discoteca.Horario = resultado.GetString("horario");
                     discoteca.Imagen = (byte[])resultado["imagen"];
 
                     discotecas.Add(discoteca);
@@ -175,6 +176,7 @@ namespace Folixa
         public string Valoracion { get; set; }
         public string Ubicacion { get; set; }
         public string Descripcion { get; set; }
+        public string Horario { get; set; }
         public byte[] Imagen { get; set; }
         public List<ImageSource> Estrellas { get; set; }
     }

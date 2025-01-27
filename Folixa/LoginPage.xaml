@@ -10,6 +10,7 @@
 
         <!-- Sección de inicio de sesión -->
         <StackLayout x:Name="loginSection" Spacing="10">
+            <Image Source="Resources/Images/logo.png" HeightRequest="100" WidthRequest="100" HorizontalOptions="Center" />
             <Entry x:Name="usernameEntry" Placeholder="Usuario" />
             <Entry x:Name="passwordEntry" Placeholder="Contraseña" IsPassword="True" />
             <Button Text="Iniciar Sesión" Clicked="OnLoginButtonClicked" />

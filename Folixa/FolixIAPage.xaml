@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Folixa.FolixIAPage"
+             Title="FolixIAPage">
+    <ContentPage.Resources>
+        <Style x:Key="UserMessageStyle" TargetType="Frame">
+            <Setter Property="BackgroundColor" Value="#0078D7" />
+            <Setter Property="CornerRadius" Value="15" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+        <Style x:Key="BotMessageStyle" TargetType="Frame">
+            <Setter Property="BackgroundColor" Value="#B3E5FC" />
+            <Setter Property="CornerRadius" Value="15" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="Margin" Value="5" />
+        </Style>
+    </ContentPage.Resources>
+    <Grid>
+        <CollectionView x:Name="MessagesCollectionView"
+                        ItemsSource="{Binding Messages}"
+                        VerticalOptions="FillAndExpand"
+                        Margin="0,0,0,50">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Style="{Binding Style}">
+                        <Label Text="{Binding Text}" TextColor="{Binding TextColor}" />
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <StackLayout Orientation="Horizontal" VerticalOptions="End">
+            <Entry x:Name="MessageEntry" Placeholder="Escribe un mensaje..." HorizontalOptions="FillAndExpand" />
+            <Button Text="Enviar" Clicked="OnSendButtonClicked" />
+        </StackLayout>
+    </Grid>
+</ContentPage>

@@ -69,7 +69,14 @@
                     </StackLayout>
                 </Frame>
             </StackLayout>
-
+            
+            <!-- Sección Comprar entradas -->
+            <StackLayout x:Name="comprarEntradasSection" IsVisible="False" Spacing="10" Padding="20">
+                <Frame CornerRadius="20" HasShadow="True" Padding="20" BackgroundColor="#333">
+                    <StackLayout Spacing="15">
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

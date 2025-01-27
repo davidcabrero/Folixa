@@ -26,5 +26,11 @@
                 Route="MainPage" 
             />
         </Tab>
+        <Tab Title="FolixIA" Icon="FolixIa.png">
+            <ShellContent 
+                ContentTemplate="{DataTemplate local:FolixIAPage}" 
+                Route="MainPage" 
+            />
+        </Tab>
     </TabBar>
 </Shell>
