@@ -95,6 +95,7 @@ namespace Folixa
                     discoteca.Descripcion = resultado.GetString("descripcion");
                     discoteca.Horario = resultado.GetString("horario");
                     discoteca.Imagen = (byte[])resultado["imagen"];
+                    discoteca.idDiscoteca = resultado.GetFloat("id_discoteca").ToString();
 
                     discotecas.Add(discoteca);
                 }
@@ -166,8 +167,87 @@ namespace Folixa
             }
         }
 
-    }
+        public async Task ActualizarValoracionDiscotecaAsync(Discoteca discoteca)
+        {
+            string query = "UPDATE Discotecas SET valoracion = @valoracion WHERE nombre = @nombre";
+            if (conexion.State != ConnectionState.Open)
+            {
+                await conexion.OpenAsync();
+            }
+            using (var command = new MySqlCommand(query, conexion))
+            {
+                command.Parameters.AddWithValue("@valoracion", discoteca.Valoracion);
+                command.Parameters.AddWithValue("@nombre", discoteca.Nombre);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
 
+        // Función para obtener comentarios
+        public async Task<List<Comentario>> ObtenerComentariosAsync(int id_discoteca)
+        {
+            List<Comentario> comentarios = new List<Comentario>();
+            try
+            {
+                if (conexion.State != ConnectionState.Open)
+                {
+                    await conexion.OpenAsync();
+                }
+                MySqlCommand consulta = new MySqlCommand("SELECT * FROM comentarios WHERE id_discoteca = @id_discoteca", conexion);
+                consulta.Parameters.AddWithValue("@id_discoteca", id_discoteca);
+                MySqlDataReader resultado = (MySqlDataReader)await consulta.ExecuteReaderAsync();
+
+                while (resultado.Read())
+                {
+                    Comentario comentario = new Comentario
+                    {
+                        User = resultado.GetString("user"),
+                        ComentarioTexto = resultado.GetString("comentario")
+                    };
+
+                    comentarios.Add(comentario);
+                }
+                resultado.Close();
+                conexion.Close();
+            }
+            catch (MySqlException e)
+            {
+                conexion.Close();
+                return null;
+            }
+            return comentarios;
+        }
+
+
+
+
+        // Función para agregar un comentario
+        public async Task<bool> AgregarComentarioAsync(string comentario, string user, int id_discoteca)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "INSERT INTO comentarios (user, id_discoteca, comentario) VALUES (@user, @id_discoteca, @comentario)";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@user", user);
+                cmd.Parameters.AddWithValue("@comentario", comentario);
+                cmd.Parameters.AddWithValue("@id_discoteca", id_discoteca);
+
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
+
+    }
 
     // Cambiar el tipo de la propiedad Imagen en la clase Discoteca de byte a byte[]
     public class Discoteca
@@ -177,6 +257,7 @@ namespace Folixa
         public string Ubicacion { get; set; }
         public string Descripcion { get; set; }
         public string Horario { get; set; }
+        public string idDiscoteca { get; set; }
         public byte[] Imagen { get; set; }
         public List<ImageSource> Estrellas { get; set; }
     }
@@ -189,5 +270,12 @@ namespace Folixa
         public int Seguidos { get; set; }
         public int Seguidores { get; set; }
         public byte[] Foto { get; set; }
+    }
+
+    // Clase Comentario
+    public class Comentario
+    {
+        public string User { get; set; }
+        public string ComentarioTexto { get; set; }
     }
 }

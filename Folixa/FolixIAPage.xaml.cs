@@ -21,7 +21,7 @@ namespace Folixa
             Messages = new ObservableCollection<Message>();
             MessagesCollectionView.ItemsSource = Messages;
             _conexion = new Conexion();
-            _groqClient = new GroqClient("API_KEY", GroqModel.LLaMA3_70b, null, null);
+            _groqClient = new GroqClient("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", GroqModel.LLaMA3_70b, null, null);
         }
 
         private async void OnSendButtonClicked(object sender, EventArgs e)
