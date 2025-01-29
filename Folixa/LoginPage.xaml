@@ -6,11 +6,11 @@
              Title="Inicio de Sesión">
 
     <StackLayout Padding="30" Spacing="10" VerticalOptions="Center">
-        <Label Text="Bienvenido/a" FontSize="24" HorizontalOptions="Center" />
 
         <!-- Sección de inicio de sesión -->
         <StackLayout x:Name="loginSection" Spacing="10">
-            <Image Source="Resources/Images/logo.png" HeightRequest="100" WidthRequest="100" HorizontalOptions="Center" />
+            <Image Source="logo_folixa_transparent.png" HeightRequest="200" WidthRequest="200" HorizontalOptions="Center">
+            </Image>
             <Entry x:Name="usernameEntry" Placeholder="Usuario" />
             <Entry x:Name="passwordEntry" Placeholder="Contraseña" IsPassword="True" />
             <Button Text="Iniciar Sesión" Clicked="OnLoginButtonClicked" />
@@ -20,6 +20,7 @@
 
         <!-- Sección de registro -->
         <StackLayout x:Name="registerSection" IsVisible="False" Spacing="10">
+            <Label Text="Bienvenido/a" FontSize="24" HorizontalOptions="Center" />
             <Entry x:Name="newUsernameEntry" Placeholder="Usuario" />
             <Entry x:Name="newEmailEntry" Placeholder="Email" />
             <Entry x:Name="newPasswordEntry" Placeholder="Contraseña" IsPassword="True" />

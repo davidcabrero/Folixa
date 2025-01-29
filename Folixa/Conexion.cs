@@ -246,6 +246,45 @@ namespace Folixa
             }
         }
 
+        public async Task<List<Entrada>> ObtenerEntradasAsync(int id_discoteca)
+        {
+            List<Entrada> entradas = new List<Entrada>();
+            try
+            {
+                if (conexion.State != ConnectionState.Open)
+                {
+                    await conexion.OpenAsync();
+                }
+                MySqlCommand consulta = new MySqlCommand("SELECT * FROM entradas WHERE id_discoteca = @id_discoteca", conexion);
+                consulta.Parameters.AddWithValue("@id_discoteca", id_discoteca);
+                MySqlDataReader resultado = (MySqlDataReader)await consulta.ExecuteReaderAsync();
+
+                while (resultado.Read())
+                {
+                    Entrada entrada = new Entrada
+                    {
+                        IdEntrada = resultado.GetInt32("id_entrada"),
+                        Precio = resultado.GetDecimal("precio"),
+                        Copas = resultado.GetInt32("copas"),
+                        Info = resultado.GetString("info"),
+                        Fecha = resultado.GetDateTime("fecha"),
+                        Cantidad = resultado.GetInt32("cantidad")
+                    };
+
+                    entradas.Add(entrada);
+                }
+                resultado.Close();
+                conexion.Close();
+            }
+            catch (MySqlException e)
+            {
+                conexion.Close();
+                return null;
+            }
+            return entradas;
+        }
+
+
 
     }
 
@@ -278,4 +317,16 @@ namespace Folixa
         public string User { get; set; }
         public string ComentarioTexto { get; set; }
     }
+
+    // Clase Entrada
+    public class Entrada
+    {
+        public int IdEntrada { get; set; }
+        public decimal Precio { get; set; }
+        public int Copas { get; set; }
+        public string Info { get; set; }
+        public int Cantidad { get; set; }
+        public DateTime Fecha { get; set; }
+    }
+
 }

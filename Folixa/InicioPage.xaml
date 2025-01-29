@@ -75,7 +75,7 @@
                             <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
                                 <Button Text="Ver Fotos" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
                                 <Button Text="Ver Comentarios" Clicked="OnVerComentariosButtonClicked" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
-                                <Button Text="Ver Entradas" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
+                                <Button Text="Ver Entradas" Clicked="OnVerEntradasButtonClicked" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
                                 <Button Text="Volver" Clicked="OnVolverButtonClicked" BackgroundColor="#B00020" TextColor="White" CornerRadius="20" />
                             </HorizontalStackLayout>
                         </StackLayout>
@@ -106,13 +106,38 @@
                     </Frame>
                 </StackLayout>
 
-                <!-- Sección Comprar entradas -->
+                <!-- Sección de ver entradas -->
+                <StackLayout x:Name="verEntradasSection" IsVisible="False" Spacing="10" Padding="20">
+                    <Frame CornerRadius="20" HasShadow="True" Padding="20" BackgroundColor="#333">
+                        <StackLayout Spacing="15">
+                            <Label Text="Entradas Disponibles" FontSize="Large" HorizontalOptions="Center" TextColor="White" FontAttributes="Bold" />
+                            <CollectionView x:Name="entradasCollectionView">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame CornerRadius="10" Padding="10" Margin="5" HasShadow="True" BackgroundColor="#444">
+                                            <StackLayout>
+                                                <Label Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" FontSize="Small" TextColor="LightGray" />
+                                                <Label Text="{Binding Precio, StringFormat='Precio: {0:C}'}" FontSize="Medium" TextColor="White" />
+                                                <Label Text="{Binding Copas, StringFormat='Copas: {0}'}" FontSize="Medium" TextColor="White" />
+                                                <Label Text="{Binding Info}" FontSize="Small" TextColor="White" />
+                                            </StackLayout>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                            <Button Text="Volver" Clicked="OnVolverEntradasButtonClicked" BackgroundColor="#B00020" TextColor="White" CornerRadius="20" />
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+
+                <!-- Sección Comprar entrada -->
                 <StackLayout x:Name="comprarEntradasSection" IsVisible="False" Spacing="10" Padding="20">
                     <Frame CornerRadius="20" HasShadow="True" Padding="20" BackgroundColor="#333">
                         <StackLayout Spacing="15">
                         </StackLayout>
                     </Frame>
                 </StackLayout>
+
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>

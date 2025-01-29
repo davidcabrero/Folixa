@@ -154,9 +154,6 @@ namespace Folixa
             }
         }
 
-
-
-
         private void OnVolverComentariosButtonClicked(object sender, EventArgs e)
         {
             ComentariosSection.IsVisible = false;
@@ -168,5 +165,34 @@ namespace Folixa
             busquedaDiscotecasSection.IsVisible = true;
             DiscotecaSection.IsVisible = false;
         }
+
+        public List<Entrada> entradas;
+
+        private async void OnVerEntradasButtonClicked(object sender, EventArgs e)
+        {
+            var selectedDiscoteca = discotecas.FirstOrDefault(d => d.Nombre == nombreDiscoteca.Text);
+
+            // extrae el idDiscoteca de la discoteca seleccionada
+            string idDiscoteca = selectedDiscoteca.idDiscoteca;
+            // convierte el string a int
+            int idDiscotecaInt = int.Parse(idDiscoteca);
+
+            if (selectedDiscoteca != null)
+            {
+                entradas = await conexion.ObtenerEntradasAsync(idDiscotecaInt);
+                entradasCollectionView.ItemsSource = entradas;
+
+                // Mostrar la sección de entradas
+                DiscotecaSection.IsVisible = false;
+                verEntradasSection.IsVisible = true;
+            }
+        }
+
+        private void OnVolverEntradasButtonClicked(object sender, EventArgs e)
+        {
+            verEntradasSection.IsVisible = false;
+            DiscotecaSection.IsVisible = true;
+        }
+
     }
 }
