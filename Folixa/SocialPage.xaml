@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Folixa.SocialPage">
+             x:Class="Folixa.SocialPage"
+             Title="Social">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
             <SearchBar x:Name="searchBar" Placeholder="Buscar usuarios" SearchCommand="{Binding BuscarUsuarioCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}" />
@@ -14,7 +15,7 @@
                         <Label x:Name="seguidosUsuario" FontSize="Small" />
                         <Label x:Name="seguidoresUsuario" FontSize="Small" />
                     </HorizontalStackLayout>
-                    <Button Text="Seguir" Command="{Binding SeguirUsuarioCommand}" CommandParameter="{Binding .}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
+                    <Button Text="Seguir" Command="{Binding SeguirUsuarioCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
                 </VerticalStackLayout>
             </Frame>
             <Button Text="Subir foto" Command="{Binding SubirFotoCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />

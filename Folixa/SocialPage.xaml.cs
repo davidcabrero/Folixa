@@ -15,9 +15,11 @@ namespace Folixa
             InitializeComponent();
             Fotos = new ObservableCollection<Foto>();
             BuscarUsuarioCommand = new Command<string>(async (username) => await BuscarUsuarioAsync(username));
-            SeguirUsuarioCommand = new Command<Usuario>(async (usuario) => await SeguirUsuarioAsync(usuario));
+            SeguirUsuarioCommand = new Command(async () => await SeguirUsuarioAsync());
             BindingContext = this;
         }
+
+        private Usuario usuarioActual;
 
         private async Task BuscarUsuarioAsync(string username)
         {
@@ -25,6 +27,7 @@ namespace Folixa
             var usuario = await conexion.ObtenerDatosUsuarioAsync(username);
             if (usuario != null)
             {
+                usuarioActual = usuario;
                 usuarioPerfilSection.IsVisible = true;
                 nombreUsuario.Text = usuario.User;
                 emailUsuario.Text = usuario.Email;
@@ -38,14 +41,21 @@ namespace Folixa
             }
         }
 
-        private async Task SeguirUsuarioAsync(Usuario usuario)
+        private async Task SeguirUsuarioAsync()
         {
+            if (usuarioActual == null) return;
+
             var conexion = new Conexion();
-            bool resultado = await conexion.SeguirUsuarioAsync(GlobalSettings.UsuarioIniciado, usuario.User);
+            bool resultado = await conexion.SeguirUsuarioAsync(GlobalSettings.UsuarioIniciado, usuarioActual.User);
             if (resultado)
             {
-                usuario.Seguidores++;
-                seguidoresUsuario.Text = $"Seguidores: {usuario.Seguidores}";
+                usuarioActual.Seguidores++;
+                seguidoresUsuario.Text = $"Seguidores: {usuarioActual.Seguidores}";
+                await DisplayAlert("Éxito", "Usuario seguido exitosamente", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Error", "No se pudo seguir al usuario", "OK");
             }
         }
     }
