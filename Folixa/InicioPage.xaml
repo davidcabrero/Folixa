@@ -115,6 +115,9 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <Frame CornerRadius="10" Padding="10" Margin="5" HasShadow="True" BackgroundColor="#444">
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:InicioPage}}, Path=BindingContext.EntradaSelectedCommand}" CommandParameter="{Binding .}" />
+                                            </Frame.GestureRecognizers>
                                             <StackLayout>
                                                 <Label Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" FontSize="Small" TextColor="LightGray" />
                                                 <Label Text="{Binding Precio, StringFormat='Precio: {0:C}'}" FontSize="Medium" TextColor="White" />
@@ -134,6 +137,9 @@
                 <StackLayout x:Name="comprarEntradasSection" IsVisible="False" Spacing="10" Padding="20">
                     <Frame CornerRadius="20" HasShadow="True" Padding="20" BackgroundColor="#333">
                         <StackLayout Spacing="15">
+                            <Label x:Name="entradaInfoLabel" FontSize="Large" HorizontalOptions="Center" TextColor="White" FontAttributes="Bold" />
+                            <Button Text="Pagar con PayPal" Clicked="OnPagarConPayPalButtonClicked" BackgroundColor="#6200EE" TextColor="White" CornerRadius="20" />
+                            <Button Text="Volver" Clicked="OnVolverComprarEntradasButtonClicked" BackgroundColor="#B00020" TextColor="White" CornerRadius="20" />
                         </StackLayout>
                     </Frame>
                 </StackLayout>

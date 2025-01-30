@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel.Communication;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Utilities;
+using static QRCoder.PayloadGenerator;
 
 namespace Folixa
 {
     public static class GlobalSettings
     {
         public static string UsuarioIniciado { get; set; }
+        public static string EmailIniciado { get; set; }
     }
 
     class Conexion
@@ -130,6 +133,7 @@ namespace Folixa
                             Seguidores = resultado.GetInt32("seguidores"),
                             Foto = (byte[])resultado["foto"]
                         };
+                        GlobalSettings.EmailIniciado = usuario.Email;
                     }
                 }
                 conexion.Close();
