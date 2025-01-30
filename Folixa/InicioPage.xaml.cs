@@ -7,12 +7,18 @@ using PaypalServerSdk;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using MimeKit;
-using MailKit.Net.Smtp;
 using Microsoft.Maui.ApplicationModel;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.qrcode;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Data;
+using System.Net.Mail;
+using System.Net.Security;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Maui.ApplicationModel.Communication;
+using static QRCoder.PayloadGenerator;
 
 namespace Folixa
 {
@@ -209,6 +215,13 @@ namespace Folixa
 
         private async void OnPagarConPayPalButtonClicked(object sender, EventArgs e)
         {
+            string emailDestino = null;
+            Usuario usuario = await conexion.ObtenerDatosUsuarioAsync(GlobalSettings.UsuarioIniciado);
+            if (usuario != null)
+            {
+                emailDestino = usuario.Email;
+            }
+
             // Implementar la lógica de pago con PayPal
             var result = await ProcesarPagoConPayPal();
             if (result)
@@ -217,11 +230,8 @@ namespace Folixa
                 string pdfFilename = GenerarPDFEntrada(entradaSeleccionada);
 
                 // Enviar el PDF por correo electrónico
-                string emailUsuario = GlobalSettings.EmailIniciado;
-                if (!string.IsNullOrEmpty(emailUsuario))
-                {
-                    await EnviarCorreoConEntradaAsync(emailUsuario, pdfFilename);
-                }
+                EnviarCorreoConEntradaAsync(emailDestino, pdfFilename);
+
 
                 await DisplayAlert("Éxito", "Pago realizado y entrada descargada en documentos", "OK");
             }
@@ -281,39 +291,26 @@ namespace Folixa
         }
 
 
-        private async Task EnviarCorreoConEntradaAsync(string email, string pdfFilename)
+        public void EnviarCorreoConEntradaAsync(string destinatario, string pdfFilename)
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Folixa", "entradasfolixa@gmail.com"));
-            message.To.Add(new MailboxAddress("", email));
-            message.Subject = "Tu entrada para la discoteca";
 
-            var body = new TextPart("plain")
-            {
-                Text = "Adjunto encontrarás tu entrada para la discoteca."
-            };
-
-            var attachment = new MimePart("application", "pdf")
-            {
-                Content = new MimeContent(File.OpenRead(pdfFilename), ContentEncoding.Default),
-                ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
-                ContentTransferEncoding = ContentEncoding.Base64,
-                FileName = Path.GetFileName(pdfFilename)
-            };
-
-            var multipart = new Multipart("mixed");
-            multipart.Add(body);
-            multipart.Add(attachment);
-
-            message.Body = multipart;
-
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync("smtp.gmail.com", 587, false);
-                await client.AuthenticateAsync("entradasfolixa@gmail.com", "folixaCorreoEntradas#382");
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
-            }
+            MailMessage correo = new MailMessage();
+            correo.From = new MailAddress("entradasfolixa@gmail.com", "Folixa", System.Text.Encoding.UTF8);//Correo de salida
+            correo.To.Add(destinatario); //Correo destino
+            correo.Subject = "¡Ya están tus entradas!"; //Asunto
+            correo.Body = "Descarga ya el pdf con tus entradas para la mejor noche de fiesta."; //Mensaje del correo
+            correo.IsBodyHtml = true;
+            correo.Priority = MailPriority.Normal;
+            SmtpClient smtp = new SmtpClient();
+            smtp.UseDefaultCredentials = false;
+            smtp.Host = "smtp.gmail.com"; //Host del servidor de correo
+            smtp.Port = 25; //Puerto de salida
+            smtp.Credentials = new System.Net.NetworkCredential("entradasfolixa@gmail.com", "folixaCorreoEntradas#382");//Cuenta de correo
+            ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
+            Attachment attachment = new Attachment(pdfFilename);
+            correo.Attachments.Add(attachment);
+            smtp.EnableSsl = true;//True si el servidor de correo permite ssl
+            smtp.Send(correo);
         }
 
         private void OnVolverComprarEntradasButtonClicked(object sender, EventArgs e)
