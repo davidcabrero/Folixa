@@ -2,7 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Folixa.SocialPage"
+             xmlns:local="clr-namespace:Folixa"
              Title="Social">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
             <SearchBar x:Name="searchBar" Placeholder="Buscar usuarios" SearchCommand="{Binding BuscarUsuarioCommand}" SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}" />
@@ -18,7 +24,25 @@
                     <Button Text="Seguir" Command="{Binding SeguirUsuarioCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
                 </VerticalStackLayout>
             </Frame>
-            <Button Text="Subir foto" Command="{Binding SubirFotoCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
+            <Frame x:Name="chatSection" IsVisible="False" Padding="20" CornerRadius="10" BackgroundColor="#f0f0f0" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <CollectionView x:Name="chatMessages" ItemsSource="{Binding Mensajes}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="5" CornerRadius="10" BackgroundColor="{Binding IsSentByCurrentUser, Converter={StaticResource BoolToColorConverter}}">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding Texto}" FontSize="Medium" TextColor="White" />
+                                    </VerticalStackLayout>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <HorizontalStackLayout Spacing="10">
+                        <Entry x:Name="messageEntry" Placeholder="Escribe un mensaje..." HorizontalOptions="FillAndExpand" />
+                        <Button Text="Enviar" Command="{Binding EnviarMensajeCommand}" CommandParameter="{Binding Text, Source={x:Reference messageEntry}}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
             <CollectionView ItemsSource="{Binding Fotos}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

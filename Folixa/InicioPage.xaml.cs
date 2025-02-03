@@ -305,7 +305,7 @@ namespace Folixa
             smtp.UseDefaultCredentials = false;
             smtp.Host = "smtp.gmail.com"; //Host del servidor de correo
             smtp.Port = 25; //Puerto de salida
-            smtp.Credentials = new System.Net.NetworkCredential("entradasfolixa@gmail.com", "folixaCorreoEntradas#382");//Cuenta de correo
+            smtp.Credentials = new System.Net.NetworkCredential("incigestapp@gmail.com", "ilcbicjuektfarni");//Cuenta de correo
             ServicePointManager.ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) { return true; };
             Attachment attachment = new Attachment(pdfFilename);
             correo.Attachments.Add(attachment);

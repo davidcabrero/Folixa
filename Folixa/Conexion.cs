@@ -288,6 +288,8 @@ namespace Folixa
 
 
 
+
+
     }
 
     // Cambiar el tipo de la propiedad Imagen en la clase Discoteca de byte a byte[]
