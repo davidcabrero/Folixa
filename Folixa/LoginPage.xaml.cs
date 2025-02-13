@@ -14,6 +14,7 @@ namespace Folixa
 
         private async void OnLoginButtonClicked(object sender, EventArgs e)
         {
+
             string username = usernameEntry.Text;
             string password = passwordEntry.Text;
 

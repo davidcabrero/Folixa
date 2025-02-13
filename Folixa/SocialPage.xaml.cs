@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using MySql.Data.MySqlClient;
-
+using System.IO;
 
 namespace Folixa
 {
@@ -40,6 +40,14 @@ namespace Folixa
                 seguidosUsuario.Text = $"Seguidos: {usuario.Seguidos}";
                 seguidoresUsuario.Text = $"Seguidores: {usuario.Seguidores}";
                 fotoUsuario.Source = ImageSource.FromStream(() => new MemoryStream(usuario.Foto));
+
+                // Cargar mensajes
+                var mensajes = await conexion.ObtenerMensajesAsync(GlobalSettings.UsuarioIniciado, usuario.User);
+                Mensajes.Clear();
+                foreach (var mensaje in mensajes)
+                {
+                    Mensajes.Add(mensaje);
+                }
             }
             else
             {
@@ -77,7 +85,12 @@ namespace Folixa
             };
             Mensajes.Add(mensaje);
 
-            // Aquí puedes agregar la lógica para enviar el mensaje al servidor
+            var conexion = new Conexion();
+            bool resultado = await conexion.GuardarMensajeAsync(GlobalSettings.UsuarioIniciado, usuarioActual.User, texto);
+            if (!resultado)
+            {
+                await DisplayAlert("Error", "No se pudo enviar el mensaje", "OK");
+            }
 
             messageEntry.Text = string.Empty;
         }

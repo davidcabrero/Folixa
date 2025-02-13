@@ -280,6 +280,7 @@ namespace Folixa
             string pdfFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Entrada.pdf");
             document.Save(pdfFilename);
             return pdfFilename;
+            
         }
 
         private byte[] GenerarCodigoQR(string texto, int size)

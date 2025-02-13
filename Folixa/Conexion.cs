@@ -18,7 +18,7 @@ namespace Folixa
         public MySqlConnection conexion;
         public Conexion()
         {
-            conexion = new MySqlConnection("Server = 127.0.0.1; Database = folixa; Uid = root; Pwd =; Port = 3306");
+            conexion = new MySqlConnection("Server = 192.168.1.36; Database = folixa; Uid = root; Pwd =; Port = 3306");
         }
 
         // Función para iniciar sesión
@@ -43,7 +43,8 @@ namespace Folixa
             }
             catch (Exception ex)
             {
-                // Manejar la excepción según sea necesario
+                // Log the exception message
+                Console.WriteLine($"Error al iniciar sesión: {ex.Message}");
                 return false;
             }
             finally
@@ -286,13 +287,70 @@ namespace Folixa
             return entradas;
         }
 
+        public async Task<List<Mensaje>> ObtenerMensajesAsync(string remitente, string destinatario)
+        {
+            List<Mensaje> mensajes = new List<Mensaje>();
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "SELECT * FROM mensajes WHERE (remitente = @remitente AND destinatario = @destinatario) OR (remitente = @destinatario AND destinatario = @remitente)";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@remitente", remitente);
+                cmd.Parameters.AddWithValue("@destinatario", destinatario);
 
+                using (MySqlDataReader resultado = (MySqlDataReader)await cmd.ExecuteReaderAsync())
+                {
+                    while (resultado.Read())
+                    {
+                        Mensaje mensaje = new Mensaje
+                        {
+                            Texto = resultado.GetString("texto"),
+                            IsSentByCurrentUser = resultado.GetString("remitente") == remitente
+                        };
+                        mensajes.Add(mensaje);
+                    }
+                }
+                conexion.Close();
+            }
+            catch (MySqlException e)
+            {
+                // Manejar la excepción según sea necesario
+                conexion.Close();
+                return null;
+            }
+            return mensajes;
+        }
+
+        public async Task<bool> GuardarMensajeAsync(string remitente, string destinatario, string texto)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "INSERT INTO mensajes (remitente, destinatario, texto) VALUES (@remitente, @destinatario, @texto)";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@remitente", remitente);
+                cmd.Parameters.AddWithValue("@destinatario", destinatario);
+                cmd.Parameters.AddWithValue("@texto", texto);
+
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
 
 
 
     }
 
-    // Cambiar el tipo de la propiedad Imagen en la clase Discoteca de byte a byte[]
+    // Clase Discoteca
     public class Discoteca
     {
         public string Nombre { get; set; }
