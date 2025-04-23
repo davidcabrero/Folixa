@@ -21,7 +21,7 @@
                         <Label x:Name="seguidosUsuario" FontSize="Small" />
                         <Label x:Name="seguidoresUsuario" FontSize="Small" />
                     </HorizontalStackLayout>
-                    <Button Text="Seguir" Command="{Binding SeguirUsuarioCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
+                    <Button x:Name="botonSeguir" Text="Seguir" Command="{Binding SeguirUsuarioCommand}" BackgroundColor="#007AFF" TextColor="White" CornerRadius="20" />
                 </VerticalStackLayout>
             </Frame>
             <Frame x:Name="chatSection" IsVisible="False" Padding="20" CornerRadius="10" BackgroundColor="#f0f0f0" HasShadow="True">

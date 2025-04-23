@@ -34,6 +34,19 @@ namespace Folixa
             var usuario = await conexion.ObtenerDatosUsuarioAsync(username);
             if (usuario != null)
             {
+                // Comprobar si le sigue o no
+                seguidos = await conexion.VerSeguidosAsync(GlobalSettings.UsuarioIniciado);
+                bool usuarioYaSeguido = seguidos.Any(s => s.User == usuario.User);
+                if (usuarioYaSeguido)
+                {
+                    botonSeguir.Text = "Dejar de seguir";
+                }
+                else
+                {
+                    botonSeguir.Text = "Seguir";
+                }
+
+                // Mostrar datos del usuario
                 usuarioActual = usuario;
                 usuarioPerfilSection.IsVisible = true;
                 chatSection.IsVisible = true;
@@ -60,27 +73,34 @@ namespace Folixa
 
         private async Task SeguirUsuarioAsync()
         {
-            if (usuarioActual == null) return;
-
-            var conexion = new Conexion();
-            string usuarioIniciado = GlobalSettings.UsuarioIniciado;
-
-            // Obtener la lista de usuarios seguidos por el usuario actual
-            var seguidos = await conexion.VerSeguidosAsync(usuarioIniciado);
-
-            bool usuarioYaSeguido = seguidos.Any(s => s.User == usuarioActual.User);
-
-            // Verificar si el usuario ya está siendo seguido
-            if (seguidos != null && seguidos.Any(s => s.User == usuarioActual.User))
+            if (botonSeguir.Text == "Dejar de seguir")
             {
-                await DisplayAlert("Información", "Ya sigues a este usuario", "OK");
-                return;
+                var conexion = new Conexion();
+                string usuarioIniciado = GlobalSettings.UsuarioIniciado;
+                bool resultado = await conexion.DejarDeSeguirAsync(usuarioIniciado, usuarioActual.User);
+                if (resultado)
+                {
+                    int numSeguidos = await conexion.ContarSeguidosAsync(usuarioIniciado);
+                    int numSeguidores = await conexion.ContarSeguidoresAsync(usuarioActual.User);
+                    seguidoresUsuario.Text = $"Seguidores: {numSeguidores}";
+                    seguidosUsuario.Text = $"Seguidos: {numSeguidos}";
+                    bool actualizar = await conexion.ActualizarSeguidosSeguidoresAsync(usuarioIniciado, numSeguidos, numSeguidores);
+                    if (!actualizar)
+                    {
+                        await DisplayAlert("Error", "No se pudo actualizar la información de seguidos y seguidores", "OK");
+                    }
+                    await DisplayAlert("Éxito", "Dejaste de seguir al usuario", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Error", "No se pudo dejar de seguir al usuario", "OK");
+                }
             }
-
-
-            // Seguir al usuario
-            if (!usuarioYaSeguido)
+            else
             {
+                var conexion = new Conexion();
+                string usuarioIniciado = GlobalSettings.UsuarioIniciado;
+
                 bool resultado = await conexion.SeguirUsuarioAsync(usuarioIniciado, usuarioActual.User);
                 if (resultado)
                 {
@@ -96,15 +116,13 @@ namespace Folixa
                         await DisplayAlert("Error", "No se pudo actualizar la información de seguidos y seguidores", "OK");
                     }
 
+                    botonSeguir.Text = "Dejar de seguir";
                     await DisplayAlert("Éxito", "Usuario seguido exitosamente", "OK");
                 }
                 else
                 {
                     await DisplayAlert("Error", "No se pudo seguir al usuario", "OK");
                 }
-            }
-            else{
-                await DisplayAlert("Información", "Ya sigues a este usuario", "OK");
             }
         }
 
