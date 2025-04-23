@@ -19,6 +19,7 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Maui.ApplicationModel.Communication;
 using static QRCoder.PayloadGenerator;
+using SkiaSharp;
 
 namespace Folixa
 {
@@ -255,18 +256,18 @@ namespace Folixa
             PdfSharpCore.Pdf.PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
+            // Crear las fuentes usando PdfSharpCore
             XFont titleFont = new XFont("Arial", 24, XFontStyle.Bold);
             XFont textFont = new XFont("Arial", 16, XFontStyle.Regular);
-            XBrush textColor = XBrushes.Black;
 
             double margin = 40;
             double qrCodeSize = 150;
             double textWidth = page.Width - qrCodeSize - 3 * margin;
 
-            gfx.DrawString(selectedDiscoteca.Nombre, titleFont, textColor, new XRect(margin, margin, textWidth, 40), XStringFormats.TopLeft);
-            gfx.DrawString("Fecha: " + entrada.Fecha.ToString("dd/MM/yyyy"), textFont, textColor, new XRect(margin, margin + 50, textWidth, 30), XStringFormats.TopLeft);
-            gfx.DrawString("Precio: " + entrada.Precio.ToString("C"), textFont, textColor, new XRect(margin, margin + 90, textWidth, 30), XStringFormats.TopLeft);
-            gfx.DrawString("Copas: " + entrada.Copas, textFont, textColor, new XRect(margin, margin + 130, textWidth, 30), XStringFormats.TopLeft);
+            gfx.DrawString(selectedDiscoteca.Nombre, titleFont, XBrushes.Black, new XRect(margin, margin, textWidth, 40), XStringFormats.TopLeft);
+            gfx.DrawString("Fecha: " + entrada.Fecha.ToString("dd/MM/yyyy"), textFont, XBrushes.Black, new XRect(margin, margin + 50, textWidth, 30), XStringFormats.TopLeft);
+            gfx.DrawString("Precio: " + entrada.Precio.ToString("C"), textFont, XBrushes.Black, new XRect(margin, margin + 90, textWidth, 30), XStringFormats.TopLeft);
+            gfx.DrawString("Copas: " + entrada.Copas, textFont, XBrushes.Black, new XRect(margin, margin + 130, textWidth, 30), XStringFormats.TopLeft);
 
             string qrCodeText = $"Entrada para {selectedDiscoteca.Nombre}\nFecha: {entrada.Fecha:dd/MM/yyyy}\nPrecio: {entrada.Precio:C}\nCopas: {entrada.Copas}";
             byte[] qrImage = GenerarCodigoQR(qrCodeText, (int)qrCodeSize);
@@ -280,8 +281,8 @@ namespace Folixa
             string pdfFilename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Entrada.pdf");
             document.Save(pdfFilename);
             return pdfFilename;
-            
         }
+
 
         private byte[] GenerarCodigoQR(string texto, int size)
         {

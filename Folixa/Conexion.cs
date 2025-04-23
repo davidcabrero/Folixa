@@ -18,7 +18,7 @@ namespace Folixa
         public MySqlConnection conexion;
         public Conexion()
         {
-            conexion = new MySqlConnection("Server = 192.168.1.36; Database = folixa; Uid = root; Pwd =; Port = 3306");
+            conexion = new MySqlConnection("Server = 127.0.0.1; Database = folixa; Uid = root; Pwd =; Port = 3306");
         }
 
         // Función para iniciar sesión
@@ -150,12 +150,135 @@ namespace Folixa
             try
             {
                 await conexion.OpenAsync();
-                string query = "UPDATE usuarios SET seguidos = seguidos + 1 WHERE user = @usuarioActual; " +
-                               "UPDATE usuarios SET seguidores = seguidores + 1 WHERE user = @usuarioASeguir;";
+                string query = "INSERT INTO seguidores (user, user_seguidor) VALUES (@usuarioActual, @usuarioASeguir)";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@usuarioActual", usuarioActual);
                 cmd.Parameters.AddWithValue("@usuarioASeguir", usuarioASeguir);
 
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
+        // Contar seguidos (En la BBDD se representa como user (usuario que sigue a alguien) y user_seguido (Al que sigue ese usuario))
+        public async Task<int> ContarSeguidosAsync(string usuario)
+        {
+            int contador = 0;
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "SELECT COUNT(*) FROM seguidores WHERE user = @usuario";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                contador = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return -1;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return contador;
+        }
+
+        // Contar seguidores
+        public async Task<int> ContarSeguidoresAsync(string usuario)
+        {
+            int contador = 0;
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "SELECT COUNT(*) FROM seguidores WHERE user_seguido = @usuario";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                contador = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return -1;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+            return contador;
+        }
+
+        // Actualizar seguidos y seguidores
+        public async Task<bool> ActualizarSeguidosSeguidoresAsync(string usuario, int seguidos, int seguidores)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "UPDATE usuarios SET seguidos = @seguidos, seguidores = @seguidores WHERE user = @usuario";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@seguidos", seguidos);
+                cmd.Parameters.AddWithValue("@seguidores", seguidores);
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
+
+        // Función para ver a quién sigues
+        public async Task<List<Seguido>> VerSeguidosAsync(string usuarioActual)
+        {
+            List<Seguido> seguidos = new List<Seguido>();
+            try
+            {
+                await conexion.OpenAsync();
+                MySqlCommand consulta = new MySqlCommand("SELECT user_seguido FROM user WHERE user = @usuarioActual", conexion);
+                consulta.Parameters.AddWithValue("@usuarioActual", usuarioActual);
+                MySqlDataReader resultado = consulta.ExecuteReader();
+                while (resultado.Read())
+                {
+                    Seguido seguido = new Seguido();
+                    seguido.User = resultado.GetString("nombre");
+
+                    seguidos.Add(seguido);
+                }
+                conexion.Close();
+            }
+            catch (MySqlException e)
+            {
+                return null;
+            }
+            return seguidos;
+        }
+
+        // Función para dejar de seguir a un usuario
+        public async Task<bool> DejarDeSeguirAsync(string usuarioActual, string usuarioASeguir)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "DELETE FROM seguidores WHERE user = @usuarioActual AND user_seguido = @usuarioASeguir";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@usuarioActual", usuarioActual);
+                cmd.Parameters.AddWithValue("@usuarioASeguir", usuarioASeguir);
                 int result = await cmd.ExecuteNonQueryAsync();
                 return result > 0;
             }
@@ -361,6 +484,12 @@ namespace Folixa
         public string idDiscoteca { get; set; }
         public byte[] Imagen { get; set; }
         public List<ImageSource> Estrellas { get; set; }
+    }
+
+    // Clase Seguido
+    public class Seguido
+    {
+        public string User { get; set; }
     }
 
     // Clase Usuario

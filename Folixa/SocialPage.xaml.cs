@@ -1,7 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Windows.Input;
 
 namespace Folixa
 {
@@ -9,6 +10,7 @@ namespace Folixa
     {
         public ObservableCollection<Foto> Fotos { get; set; }
         public ObservableCollection<Mensaje> Mensajes { get; set; }
+        public List<Seguido> seguidos;
         public ICommand BuscarUsuarioCommand { get; }
         public ICommand SeguirUsuarioCommand { get; }
         public ICommand EnviarMensajeCommand { get; }
@@ -61,16 +63,48 @@ namespace Folixa
             if (usuarioActual == null) return;
 
             var conexion = new Conexion();
-            bool resultado = await conexion.SeguirUsuarioAsync(GlobalSettings.UsuarioIniciado, usuarioActual.User);
-            if (resultado)
+            string usuarioIniciado = GlobalSettings.UsuarioIniciado;
+
+            // Obtener la lista de usuarios seguidos por el usuario actual
+            var seguidos = await conexion.VerSeguidosAsync(usuarioIniciado);
+
+            bool usuarioYaSeguido = seguidos.Any(s => s.User == usuarioActual.User);
+
+            // Verificar si el usuario ya está siendo seguido
+            if (seguidos != null && seguidos.Any(s => s.User == usuarioActual.User))
             {
-                usuarioActual.Seguidores++;
-                seguidoresUsuario.Text = $"Seguidores: {usuarioActual.Seguidores}";
-                await DisplayAlert("Éxito", "Usuario seguido exitosamente", "OK");
+                await DisplayAlert("Información", "Ya sigues a este usuario", "OK");
+                return;
             }
-            else
+
+
+            // Seguir al usuario
+            if (!usuarioYaSeguido)
             {
-                await DisplayAlert("Error", "No se pudo seguir al usuario", "OK");
+                bool resultado = await conexion.SeguirUsuarioAsync(usuarioIniciado, usuarioActual.User);
+                if (resultado)
+                {
+                    int numSeguidos = await conexion.ContarSeguidosAsync(usuarioIniciado);
+                    int numSeguidores = await conexion.ContarSeguidoresAsync(usuarioActual.User);
+
+                    seguidoresUsuario.Text = $"Seguidores: {numSeguidores}";
+                    seguidosUsuario.Text = $"Seguidos: {numSeguidos}";
+
+                    bool actualizar = await conexion.ActualizarSeguidosSeguidoresAsync(usuarioIniciado, numSeguidos, numSeguidores);
+                    if (!actualizar)
+                    {
+                        await DisplayAlert("Error", "No se pudo actualizar la información de seguidos y seguidores", "OK");
+                    }
+
+                    await DisplayAlert("Éxito", "Usuario seguido exitosamente", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Error", "No se pudo seguir al usuario", "OK");
+                }
+            }
+            else{
+                await DisplayAlert("Información", "Ya sigues a este usuario", "OK");
             }
         }
 
