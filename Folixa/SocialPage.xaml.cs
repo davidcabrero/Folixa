@@ -89,6 +89,7 @@ namespace Folixa
                     {
                         await DisplayAlert("Error", "No se pudo actualizar la información de seguidos y seguidores", "OK");
                     }
+                    botonSeguir.Text = "Seguir";
                     await DisplayAlert("Éxito", "Dejaste de seguir al usuario", "OK");
                 }
                 else
