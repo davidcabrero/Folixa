@@ -150,7 +150,7 @@ namespace Folixa
             try
             {
                 await conexion.OpenAsync();
-                string query = "INSERT INTO seguidores (user, user_seguidor) VALUES (@usuarioActual, @usuarioASeguir)";
+                string query = "INSERT INTO seguidores (user, user_seguido) VALUES (@usuarioActual, @usuarioASeguir)";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@usuarioActual", usuarioActual);
                 cmd.Parameters.AddWithValue("@usuarioASeguir", usuarioASeguir);
@@ -250,13 +250,13 @@ namespace Folixa
             try
             {
                 await conexion.OpenAsync();
-                MySqlCommand consulta = new MySqlCommand("SELECT user_seguido FROM user WHERE user = @usuarioActual", conexion);
+                MySqlCommand consulta = new MySqlCommand("SELECT * FROM seguidores WHERE user = @usuarioActual", conexion);
                 consulta.Parameters.AddWithValue("@usuarioActual", usuarioActual);
                 MySqlDataReader resultado = consulta.ExecuteReader();
                 while (resultado.Read())
                 {
                     Seguido seguido = new Seguido();
-                    seguido.User = resultado.GetString("nombre");
+                    seguido.User = resultado.GetString("user_seguido");
 
                     seguidos.Add(seguido);
                 }
@@ -264,6 +264,8 @@ namespace Folixa
             }
             catch (MySqlException e)
             {
+                // Manejar la excepción según sea necesario
+                Console.WriteLine($"Error al obtener seguidos: {e.Message}");
                 return null;
             }
             return seguidos;

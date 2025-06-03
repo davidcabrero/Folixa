@@ -15,6 +15,8 @@ namespace Folixa
         public ICommand SeguirUsuarioCommand { get; }
         public ICommand EnviarMensajeCommand { get; }
 
+        private Usuario usuarioActual;
+
         public SocialPage()
         {
             InitializeComponent();
@@ -26,27 +28,16 @@ namespace Folixa
             BindingContext = this;
         }
 
-        private Usuario usuarioActual;
-
         private async Task BuscarUsuarioAsync(string username)
         {
             var conexion = new Conexion();
             var usuario = await conexion.ObtenerDatosUsuarioAsync(username);
             if (usuario != null)
             {
-                // Comprobar si le sigue o no
                 seguidos = await conexion.VerSeguidosAsync(GlobalSettings.UsuarioIniciado);
                 bool usuarioYaSeguido = seguidos.Any(s => s.User == usuario.User);
-                if (usuarioYaSeguido)
-                {
-                    botonSeguir.Text = "Dejar de seguir";
-                }
-                else
-                {
-                    botonSeguir.Text = "Seguir";
-                }
+                botonSeguir.Text = usuarioYaSeguido ? "Dejar de seguir" : "Seguir";
 
-                // Mostrar datos del usuario
                 usuarioActual = usuario;
                 usuarioPerfilSection.IsVisible = true;
                 chatSection.IsVisible = true;
@@ -56,7 +47,6 @@ namespace Folixa
                 seguidoresUsuario.Text = $"Seguidores: {usuario.Seguidores}";
                 fotoUsuario.Source = ImageSource.FromStream(() => new MemoryStream(usuario.Foto));
 
-                // Cargar mensajes
                 var mensajes = await conexion.ObtenerMensajesAsync(GlobalSettings.UsuarioIniciado, usuario.User);
                 Mensajes.Clear();
                 foreach (var mensaje in mensajes)
@@ -73,22 +63,30 @@ namespace Folixa
 
         private async Task SeguirUsuarioAsync()
         {
+            string usuarioIniciado = GlobalSettings.UsuarioIniciado;
+
+            if (usuarioActual == null)
+            {
+                await DisplayAlert("Error", "No se ha seleccionado ningún usuario", "OK");
+                return;
+            }
+
+            string usuarioObjetivo = usuarioActual.User;
+            var conexion = new Conexion();
+
             if (botonSeguir.Text == "Dejar de seguir")
             {
-                var conexion = new Conexion();
-                string usuarioIniciado = GlobalSettings.UsuarioIniciado;
-                bool resultado = await conexion.DejarDeSeguirAsync(usuarioIniciado, usuarioActual.User);
+                bool resultado = await conexion.DejarDeSeguirAsync(usuarioIniciado, usuarioObjetivo);
                 if (resultado)
                 {
                     int numSeguidos = await conexion.ContarSeguidosAsync(usuarioIniciado);
-                    int numSeguidores = await conexion.ContarSeguidoresAsync(usuarioActual.User);
+                    int numSeguidores = await conexion.ContarSeguidoresAsync(usuarioObjetivo);
                     seguidoresUsuario.Text = $"Seguidores: {numSeguidores}";
                     seguidosUsuario.Text = $"Seguidos: {numSeguidos}";
                     bool actualizar = await conexion.ActualizarSeguidosSeguidoresAsync(usuarioIniciado, numSeguidos, numSeguidores);
                     if (!actualizar)
-                    {
                         await DisplayAlert("Error", "No se pudo actualizar la información de seguidos y seguidores", "OK");
-                    }
+
                     botonSeguir.Text = "Seguir";
                     await DisplayAlert("Éxito", "Dejaste de seguir al usuario", "OK");
                 }
@@ -99,23 +97,16 @@ namespace Folixa
             }
             else
             {
-                var conexion = new Conexion();
-                string usuarioIniciado = GlobalSettings.UsuarioIniciado;
-
-                bool resultado = await conexion.SeguirUsuarioAsync(usuarioIniciado, usuarioActual.User);
+                bool resultado = await conexion.SeguirUsuarioAsync(usuarioIniciado, usuarioObjetivo);
                 if (resultado)
                 {
                     int numSeguidos = await conexion.ContarSeguidosAsync(usuarioIniciado);
-                    int numSeguidores = await conexion.ContarSeguidoresAsync(usuarioActual.User);
-
+                    int numSeguidores = await conexion.ContarSeguidoresAsync(usuarioObjetivo);
                     seguidoresUsuario.Text = $"Seguidores: {numSeguidores}";
                     seguidosUsuario.Text = $"Seguidos: {numSeguidos}";
-
                     bool actualizar = await conexion.ActualizarSeguidosSeguidoresAsync(usuarioIniciado, numSeguidos, numSeguidores);
                     if (!actualizar)
-                    {
                         await DisplayAlert("Error", "No se pudo actualizar la información de seguidos y seguidores", "OK");
-                    }
 
                     botonSeguir.Text = "Dejar de seguir";
                     await DisplayAlert("Éxito", "Usuario seguido exitosamente", "OK");
@@ -141,9 +132,7 @@ namespace Folixa
             var conexion = new Conexion();
             bool resultado = await conexion.GuardarMensajeAsync(GlobalSettings.UsuarioIniciado, usuarioActual.User, texto);
             if (!resultado)
-            {
                 await DisplayAlert("Error", "No se pudo enviar el mensaje", "OK");
-            }
 
             messageEntry.Text = string.Empty;
         }
