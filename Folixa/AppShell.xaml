@@ -32,5 +32,11 @@
                 Route="MainPage" 
             />
         </Tab>
+        <Tab Title="Admin" Icon="admin.png" IsVisible="False" x:Name="AdminTab">
+            <ShellContent 
+                ContentTemplate="{DataTemplate local:AdminPage}" 
+                Route="MainPage" 
+            />
+        </Tab>
     </TabBar>
 </Shell>

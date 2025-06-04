@@ -117,7 +117,7 @@ namespace Folixa
             try
             {
                 await conexion.OpenAsync();
-                string query = "SELECT user, email, seguidos, seguidores, foto FROM usuarios WHERE user = @username";
+                string query = "SELECT user, email, seguidos, seguidores, foto, perfil FROM usuarios WHERE user = @username";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@username", username);
 
@@ -129,6 +129,7 @@ namespace Folixa
                         {
                             User = resultado.GetString("user"),
                             Email = resultado.GetString("email"),
+                            Perfil = resultado.GetInt32("perfil"),
                             Seguidos = resultado.GetInt32("seguidos"),
                             Seguidores = resultado.GetInt32("seguidores"),
                             Foto = (byte[])resultado["foto"]
@@ -499,6 +500,7 @@ namespace Folixa
     {
         public string User { get; set; }
         public string Email { get; set; }
+        public int Perfil { get; set; } // 0: Usuario, 1: Discoteca
         public int Seguidos { get; set; }
         public int Seguidores { get; set; }
         public byte[] Foto { get; set; }

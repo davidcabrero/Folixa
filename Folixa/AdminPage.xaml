@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Folixa.AdminPage"
+             Title="Admin">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="24">
+            <!-- Sección: Discotecas -->
+            <Frame BorderColor="Gray" CornerRadius="8" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Gestión de Discotecas" FontAttributes="Bold" FontSize="18"/>
+                    <Button Text="Añadir Discoteca" x:Name="AddDiscoButton"/>
+                    <Button Text="Editar Discoteca" x:Name="EditDiscoButton"/>
+                    <Button Text="Eliminar Discoteca" x:Name="DeleteDiscoButton"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sección: Usuarios -->
+            <Frame BorderColor="Gray" CornerRadius="8" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Gestión de Usuarios" FontAttributes="Bold" FontSize="18"/>
+                    <Button Text="Añadir Usuario" x:Name="AddUserButton"/>
+                    <Button Text="Ver Usuarios" x:Name="ViewUsersButton"/>
+                    <Button Text="Editar Usuario" x:Name="EditUserButton"/>
+                    <Button Text="Eliminar Usuario" x:Name="DeleteUserButton"/>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
