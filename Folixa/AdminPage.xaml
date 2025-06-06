@@ -1,30 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
              x:Class="Folixa.AdminPage"
              Title="Admin">
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="24">
-            <!-- Sección: Discotecas -->
-            <Frame BorderColor="Gray" CornerRadius="8" Padding="16">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Gestión de Discotecas" FontAttributes="Bold" FontSize="18"/>
-                    <Button Text="Añadir Discoteca" x:Name="AddDiscoButton"/>
-                    <Button Text="Editar Discoteca" x:Name="EditDiscoButton"/>
-                    <Button Text="Eliminar Discoteca" x:Name="DeleteDiscoButton"/>
-                </VerticalStackLayout>
-            </Frame>
+    <VerticalStackLayout Padding="20" Spacing="24">
+        <!-- Barra de herramientas superior -->
+        <Grid ColumnSpacing="12" RowSpacing="0" HorizontalOptions="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="24" /> <!-- Espacio entre botones -->
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Text="Eliminar Discoteca" x:Name="DeleteDiscoButton" Grid.Column="2" Clicked="OnDeleteDiscotecaButtonClicked"/>
+            <Button Text="Eliminar Usuario" x:Name="DeleteUserButton" Grid.Column="4" Clicked="OnDeleteUserButtonClicked"/>
+        </Grid>
 
-            <!-- Sección: Usuarios -->
-            <Frame BorderColor="Gray" CornerRadius="8" Padding="16">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Gestión de Usuarios" FontAttributes="Bold" FontSize="18"/>
-                    <Button Text="Añadir Usuario" x:Name="AddUserButton"/>
-                    <Button Text="Ver Usuarios" x:Name="ViewUsersButton"/>
-                    <Button Text="Editar Usuario" x:Name="EditUserButton"/>
-                    <Button Text="Eliminar Usuario" x:Name="DeleteUserButton"/>
-                </VerticalStackLayout>
-            </Frame>
-        </VerticalStackLayout>
-    </ScrollView>
+        <ContentView x:Name="DynamicPanel">
+            <StackLayout>
+                <!-- Lista de usuarios -->
+                <StackLayout x:Name="ViewUsersPanel" Spacing="12">
+                    <ListView x:Name="usersListView"/>
+                </StackLayout>
+            </StackLayout>
+        </ContentView>
+
+        <!-- Estadísticas con scroll -->
+        <ScrollView>
+            <VerticalStackLayout Spacing="24" Padding="0,0,0,24">
+                <Label Text="Estadísticas" FontAttributes="Bold" FontSize="22" HorizontalOptions="Center" />
+
+                <!-- Gráfico de Entradas -->
+                <Frame BorderColor="Gray" CornerRadius="12" Padding="16" BackgroundColor="#F5F5F5">
+                    <VerticalStackLayout>
+                        <Label Text="Entradas Vendidas" FontAttributes="Bold" FontSize="18" />
+                        <skia:SKCanvasView x:Name="EntradasChartCanvas" HeightRequest="150" PaintSurface="EntradasChartCanvas_PaintSurface" />
+                        <Label Text="(Gráfico de líneas aquí)" FontSize="12" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+    </VerticalStackLayout>
 </ContentPage>

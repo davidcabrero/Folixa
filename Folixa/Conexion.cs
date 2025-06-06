@@ -11,6 +11,7 @@ namespace Folixa
     public static class GlobalSettings
     {
         public static string UsuarioIniciado { get; set; }
+
     }
 
     class Conexion
@@ -472,6 +473,121 @@ namespace Folixa
             }
         }
 
+        // eliminar usuario
+        public async Task<bool> EliminarUsuarioAsync(string user)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "DELETE FROM usuarios WHERE user = @username";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@username", user);
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
+        // obtener usuarios
+        public async Task<List<Usuario>> ObtenerUsuariosAsync()
+        {
+            List<Usuario> usuarios = new List<Usuario>();
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "SELECT user, email, seguidos, seguidores, foto, perfil FROM usuarios";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                using (MySqlDataReader resultado = (MySqlDataReader)await cmd.ExecuteReaderAsync())
+                {
+                    while (resultado.Read())
+                    {
+                        Usuario usuario = new Usuario
+                        {
+                            User = resultado.GetString("user"),
+                            Email = resultado.GetString("email"),
+                            Seguidos = resultado.GetInt32("seguidos"),
+                            Seguidores = resultado.GetInt32("seguidores"),
+                            Foto = (byte[])resultado["foto"],
+                            Perfil = resultado.GetInt32("perfil")
+                        };
+                        usuarios.Add(usuario);
+                    }
+                }
+                conexion.Close();
+            }
+            catch (MySqlException e)
+            {
+                // Manejar la excepción según sea necesario
+                conexion.Close();
+                return null;
+            }
+            return usuarios;
+        }
+
+        // eliminar discoteca
+        public async Task<bool> EliminarDiscotecaAsync(string idDiscoteca)
+        {
+            try
+            {
+                await conexion.OpenAsync();
+                string query = "DELETE FROM discotecas WHERE id_discoteca = @idDiscoteca";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@idDiscoteca", idDiscoteca);
+                int result = await cmd.ExecuteNonQueryAsync();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción según sea necesario
+                return false;
+            }
+            finally
+            {
+                conexion.Close();
+            }
+        }
+
+        public async Task<List<Entrada>> ObtenerEntradasVendidasPorFechaAsync()
+        {
+            var lista = new List<Entrada>();
+
+            try
+            {
+                await conexion.OpenAsync();
+                string query = @"SELECT fecha, SUM(cantidad) as cantidad_total
+                         FROM entradas
+                         GROUP BY fecha
+                         ORDER BY fecha";
+
+                using (var cmd = new MySqlCommand(query, conexion))
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        lista.Add(new Entrada
+                        {
+                            Fecha = reader.GetDateTime("fecha"),
+                            Cantidad = reader.GetInt32("cantidad_total")
+                        });
+                    }
+                }
+            }
+            finally
+            {
+                await conexion.CloseAsync();
+            }
+
+            return lista;
+        }
+
 
 
     }
@@ -522,6 +638,12 @@ namespace Folixa
         public string Info { get; set; }
         public int Cantidad { get; set; }
         public DateTime Fecha { get; set; }
+    }
+
+    public class Venta
+    {
+        public DateTime Fecha { get; set; }
+        public int Cantidad { get; set; }
     }
 
 }
